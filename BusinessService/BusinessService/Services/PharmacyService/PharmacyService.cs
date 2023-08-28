@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BusinessService.Data;
 using BusinessService.Dtos.Pharmacy;
 using BusinessService.Models;
 
@@ -7,32 +8,28 @@ namespace BusinessService.Services.PharmacyService
     public class PharmacyService : IPharmacyService
     {
         private readonly IMapper _mapper;
-        private static List<Pharmacy> _pharmacyList = new List<Pharmacy>
-        {
-            new Pharmacy { Id = 1, Name = "Test Pharmacy 1"},
-            new Pharmacy { Id = 2, Name = "Test Pharmacy 2"},
-            new Pharmacy { Id = 3, Name = "Test Pharmacy 3"},
-        };
+        private readonly DataContext _context;
 
-        public PharmacyService(IMapper mapper)
+        public PharmacyService(IMapper mapper, DataContext context)
         {
             _mapper = mapper;
+            _context = context;
         }
 
         public async Task<ServiceResponse<List<GetPharmacyDto>>> GetAllPharmacies()
         {
             var serviceResponse = new ServiceResponse<List<GetPharmacyDto>>();
-            serviceResponse.Data = _pharmacyList.Select(pharmacy => _mapper.Map<GetPharmacyDto>(pharmacy)).ToList();
+            var dbPharmacies = await _context.tPharmacies.ToListAsync();
+            serviceResponse.Data = dbPharmacies.Select(pharmacy => _mapper.Map<GetPharmacyDto>(pharmacy)).ToList();
             return serviceResponse;
         }
 
         public async Task<ServiceResponse<GetByIdPharmacyDto>> GetPharmacyById(int id)
         {
-            var pharmacy = _pharmacyList.FirstOrDefault(pharmacy => pharmacy.Id == id);
             var serviceResponse = new ServiceResponse<GetByIdPharmacyDto>();
-            serviceResponse.Data = _mapper.Map<GetByIdPharmacyDto>(pharmacy);
+            var dbPharmacy = await _context.tPharmacies.FirstOrDefaultAsync(pharmacy => pharmacy.Id == id);
+            serviceResponse.Data = _mapper.Map<GetByIdPharmacyDto>(dbPharmacy);
             return serviceResponse;
-
         }
 
         public async Task<ServiceResponse<GetByIdPharmacyDto>> UpdatePharmacy(UpdatePharmacyDto updatedPharmacy)
@@ -41,12 +38,13 @@ namespace BusinessService.Services.PharmacyService
             try
             {
                 serviceResponse = new ServiceResponse<GetByIdPharmacyDto>();
-                var pharmacyToUpdate = _pharmacyList.FirstOrDefault(pharmacy => pharmacy.Id == updatedPharmacy.Id);
-
+                var pharmacyToUpdate = await _context.tPharmacies.FindAsync(updatedPharmacy.Id);
                 if (pharmacyToUpdate is null) { throw new Exception($"Pharmacy with id {updatedPharmacy.Id} was not found"); }
                 
-                updatedPharmacy.UpdatedDate = DateTime.Now; 
+                updatedPharmacy.UpdatedDate = DateTime.Now;
+                updatedPharmacy.CreatedDate = pharmacyToUpdate.CreatedDate;
                 _mapper.Map(updatedPharmacy, pharmacyToUpdate);
+                await _context.SaveChangesAsync();
 
                 serviceResponse.Data = _mapper.Map<GetByIdPharmacyDto>(pharmacyToUpdate);
                 return serviceResponse;
