@@ -1,4 +1,5 @@
 ﻿using BusinessService.Models;
+using BusinessService.Services.PharmacyService;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BusinessService.Controllers
@@ -7,29 +8,29 @@ namespace BusinessService.Controllers
     [Route("api/[Controller]")]
     public class PharmacyController : ControllerBase
     {
-        private static List<Pharmacy> _pharmacyList = new List<Pharmacy>
+        private readonly IPharmacyService _pharmacyService;
+
+        public PharmacyController(IPharmacyService pharmacyService)
         {
-            new Pharmacy { Id = 1, Name = "Test Pharmacy 1"},
-            new Pharmacy { Id = 2, Name = "Test Pharmacy 2"},
-            new Pharmacy { Id = 3, Name = "Test Pharmacy 3"},
-        };
+            _pharmacyService = pharmacyService;
+        }
 
         [HttpGet("GetPharmacyById/{id}")]
-        public ActionResult<Pharmacy> Get(int id)
+        public async Task<ActionResult<Pharmacy>> Get(int id)
         {
-            return Ok(_pharmacyList.FirstOrDefault(p => p.Id == id));
+            return Ok(await _pharmacyService.GetPharmacyById(id));
         }
 
         [HttpGet("GetPharmacies")]
-        public ActionResult<List<Pharmacy>> GetAll()
+        public async Task<ActionResult<List<Pharmacy>>> GetAll()
         {
-            return Ok(_pharmacyList);
+            return Ok(await _pharmacyService.GetAllPharmacies());
         }
 
         [HttpPut("UpdatePharmacy")]
-        public ActionResult<Pharmacy> UpdatePharmacy(Pharmacy pharmacy)
+        public async Task<ActionResult<Pharmacy>> UpdatePharmacy(Pharmacy pharmacy)
         {
-            return Ok(pharmacy);
+            return Ok(await _pharmacyService.UpdatePharmacy(pharmacy));
         }
     }
 }
