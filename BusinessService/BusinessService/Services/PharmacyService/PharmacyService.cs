@@ -11,22 +11,27 @@ namespace BusinessService.Services.PharmacyService
             new Pharmacy { Id = 3, Name = "Test Pharmacy 3"},
         };
 
-        public async Task<List<Pharmacy>> GetAllPharmacies()
+        public async Task<ServiceResponse<List<Pharmacy>>> GetAllPharmacies()
         {
-            return _pharmacyList;
+            var serviceResponse = new ServiceResponse<List<Pharmacy>>();
+            serviceResponse.Data = _pharmacyList;
+            return serviceResponse;
         }
 
-        public async Task<Pharmacy> GetPharmacyById(int id)
+        public async Task<ServiceResponse<Pharmacy>> GetPharmacyById(int id)
         {
             var pharmacy = _pharmacyList.FirstOrDefault(p => p.Id == id);
-            if (pharmacy is not null) return pharmacy;
-            else throw new Exception($"Pharmacy with Id {id} does not exist");
-            
+            var serviceResponse = new ServiceResponse<Pharmacy>();
+            serviceResponse.Data = pharmacy;
+            return serviceResponse;
+
         }
 
-        public async Task<Pharmacy> UpdatePharmacy(Pharmacy pharmacy)
+        public async Task<ServiceResponse<Pharmacy>> UpdatePharmacy(Pharmacy pharmacy)
         {
-            return pharmacy;
+            var serviceResponse = new ServiceResponse<Pharmacy>();
+            serviceResponse.Data = pharmacy;
+            return serviceResponse;
         }
     }
 }

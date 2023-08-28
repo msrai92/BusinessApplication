@@ -16,19 +16,19 @@ namespace BusinessService.Controllers
         }
 
         [HttpGet("GetPharmacyById/{id}")]
-        public async Task<ActionResult<Pharmacy>> Get(int id)
+        public async Task<ActionResult<ServiceResponse<Pharmacy>>> Get(int id)
         {
             return Ok(await _pharmacyService.GetPharmacyById(id));
         }
 
         [HttpGet("GetPharmacies")]
-        public async Task<ActionResult<List<Pharmacy>>> GetAll()
+        public async Task<ActionResult<ServiceResponse<List<Pharmacy>>>> GetAll()
         {
             return Ok(await _pharmacyService.GetAllPharmacies());
         }
 
         [HttpPut("UpdatePharmacy")]
-        public async Task<ActionResult<Pharmacy>> UpdatePharmacy(Pharmacy pharmacy)
+        public async Task<ActionResult<ServiceResponse<Pharmacy>>> UpdatePharmacy(Pharmacy pharmacy)
         {
             return Ok(await _pharmacyService.UpdatePharmacy(pharmacy));
         }
