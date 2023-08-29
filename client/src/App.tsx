@@ -1,11 +1,13 @@
 import React from "react";
-import logo from "./logo.svg";
+import { Center } from "@mantine/core";
+
 import "./App.css";
+import PharmacyList from "./components/PharmacyList";
 
 function App() {
   return (
     <div className="App">
-      <h1>App</h1>
+      <PharmacyList />
     </div>
   );
 }
