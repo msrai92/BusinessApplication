@@ -1,0 +1,12 @@
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'Warehouse' AND TABLE_NAME = 'tWarehouses')
+BEGIN 
+    CREATE TABLE [Warehouse].[tWarehouses] (
+        WarehouseId INT PRIMARY KEY IDENTITY,
+        Name NVARCHAR(255) NOT NULL,
+        Address NVARCHAR(255) NOT NULL,
+        City NVARCHAR(255) NOT NULL,
+        State NVARCHAR(255) NOT NULL,
+        Zip INT NOT NULL,
+    )
+END
+GO
