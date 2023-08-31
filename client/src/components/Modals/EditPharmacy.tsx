@@ -7,6 +7,7 @@ import { cloneDeep } from "lodash";
 import { Pharmacy } from "../../@types/Pharmacy";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getByIdPharmacies, pharmacySelector } from "../../store/pharmacySlice";
+import { alert } from "../../store/alertSlice";
 
 interface Props {
   title: string;
@@ -58,7 +59,7 @@ const EditPharmacy = ({ title, id, opened, close }: Props) => {
 
   useEffect(() => {
     if (opened === false) return;
-    dispatch(getByIdPharmacies(id));
+    dispatch(getByIdPharmacies(8));
   }, [id, dispatch, opened]);
 
   useEffect(() => {
@@ -109,7 +110,9 @@ const EditPharmacy = ({ title, id, opened, close }: Props) => {
         onClose(true);
       }
     } catch (error) {
-      console.log(error);
+      if (error instanceof Error) {
+        dispatch(alert(error.message, "danger"));
+      }
     }
   };
 

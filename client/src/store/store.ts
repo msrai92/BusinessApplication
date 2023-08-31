@@ -1,9 +1,11 @@
 import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
 import pharmacySlice from "./pharmacySlice";
+import alertSlice from "./alertSlice";
 
 const store = configureStore({
   reducer: {
     pharmacy: pharmacySlice,
+    alert: alertSlice,
   },
 });
 

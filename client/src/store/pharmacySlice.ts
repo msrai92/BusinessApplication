@@ -3,6 +3,7 @@ import axios from "axios";
 
 import { Pharmacy } from "../@types/Pharmacy";
 import { RootState, AppThunk } from "./store";
+import { alert } from "./alertSlice";
 
 interface PharmacyState {
   pharmacies: Pharmacy[];
@@ -40,8 +41,14 @@ export const getAllPharmacies = (): AppThunk => async (dispatch) => {
       "https://localhost:7055/api/Pharmacy/GetPharmacies"
     );
 
-    if (res.data.Data) dispatch(getPharmacies(res.data.Data));
-  } catch (error) {}
+    if (res.data.Data && res.data.isSuccess) {
+      dispatch(getPharmacies(res.data.Data));
+    } else {
+      dispatch(alert(res.data.Message, "Danger"));
+    }
+  } catch (error) {
+    if (error instanceof Error) dispatch(alert(error.message, "danger"));
+  }
 };
 
 export const getByIdPharmacies =
@@ -51,9 +58,15 @@ export const getByIdPharmacies =
       const res = await axios.get(
         `https://localhost:7055/api/Pharmacy/GetPharmacyById/${id}`
       );
-
-      if (res.data.Data) dispatch(setPharmacy(res.data.Data));
-    } catch (error) {}
+      console.log(res);
+      if (res.data.Data && res.data.isSuccess) {
+        dispatch(setPharmacy(res.data.Data));
+      } else {
+        dispatch(alert(res.data.Message, "Danger"));
+      }
+    } catch (error) {
+      if (error instanceof Error) dispatch(alert(error.message, "danger"));
+    }
   };
 
 export default pharmacySlice.reducer;

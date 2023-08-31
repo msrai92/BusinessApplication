@@ -19,16 +19,34 @@ namespace BusinessService.Services.PharmacyService
         public async Task<ServiceResponse<List<GetPharmacyDto>>> GetAllPharmacies()
         {
             var serviceResponse = new ServiceResponse<List<GetPharmacyDto>>();
-            var dbPharmacies = await _context.tPharmacies.ToListAsync();
-            serviceResponse.Data = dbPharmacies.Select(pharmacy => _mapper.Map<GetPharmacyDto>(pharmacy)).ToList();
+
+            try
+            {
+                var dbPharmacies = await _context.tPharmacies.ToListAsync();
+                serviceResponse.Data = dbPharmacies.Select(pharmacy => _mapper.Map<GetPharmacyDto>(pharmacy)).ToList();
+            } 
+            catch (Exception ex)
+            {
+                serviceResponse.isSuccess = false;
+                serviceResponse.Message = ex.Message;
+            }
             return serviceResponse;
         }
 
         public async Task<ServiceResponse<GetByIdPharmacyDto>> GetPharmacyById(int id)
         {
             var serviceResponse = new ServiceResponse<GetByIdPharmacyDto>();
-            var dbPharmacy = await _context.tPharmacies.FirstOrDefaultAsync(pharmacy => pharmacy.Id == id);
-            serviceResponse.Data = _mapper.Map<GetByIdPharmacyDto>(dbPharmacy);
+            try
+            {
+                var dbPharmacy = await _context.tPharmacies.FirstOrDefaultAsync(pharmacy => pharmacy.Id == id);
+                serviceResponse.Data = _mapper.Map<GetByIdPharmacyDto>(dbPharmacy);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.isSuccess = false;
+                serviceResponse.Message = ex.Message;
+            }
+            
             return serviceResponse;
         }
 

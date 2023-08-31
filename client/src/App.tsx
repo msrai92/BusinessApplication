@@ -4,11 +4,13 @@ import store from "./store/store";
 
 import "./App.css";
 import PharmacyList from "./components/PharmacyList";
+import AlertNotification from "./components/AlertNotification";
 
 function App() {
   return (
     <Provider store={store}>
       <div className="App">
+        <AlertNotification />
         <PharmacyList />
       </div>
     </Provider>

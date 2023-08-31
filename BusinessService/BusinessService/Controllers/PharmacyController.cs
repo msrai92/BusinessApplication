@@ -19,7 +19,14 @@ namespace BusinessService.Controllers
         [HttpGet("GetPharmacyById/{id}")]
         public async Task<ActionResult<ServiceResponse<GetByIdPharmacyDto>>> Get(int id)
         {
-            return Ok(await _pharmacyService.GetPharmacyById(id));
+            var response = await _pharmacyService.GetPharmacyById(id);
+            if(response.Data is null)
+            {
+                response.Message = $"Pharmacy with id {id} was not found";
+                response.isSuccess = false;
+                return NotFound(response);
+            }
+            return Ok();
         }
 
         [HttpGet("GetPharmacies")]
@@ -34,6 +41,8 @@ namespace BusinessService.Controllers
             var response = await _pharmacyService.UpdatePharmacy(pharmacy);
             if(response.Data is null)
             {
+                response.Message = $"Pharmacy with id {pharmacy.Id} was not found";
+                response.isSuccess = false;
                 return NotFound(response);
             }
             return Ok(response);
