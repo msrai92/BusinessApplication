@@ -1,14 +1,17 @@
 import React from "react";
-import { Center } from "@mantine/core";
+import { Provider } from "react-redux";
+import store from "./store/store";
 
 import "./App.css";
 import PharmacyList from "./components/PharmacyList";
 
 function App() {
   return (
-    <div className="App">
-      <PharmacyList />
-    </div>
+    <Provider store={store}>
+      <div className="App">
+        <PharmacyList />
+      </div>
+    </Provider>
   );
 }
 

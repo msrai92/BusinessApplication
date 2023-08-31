@@ -2,14 +2,17 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Modal, TextInput, Button, Group, NumberInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { cloneDeep } from "lodash";
 
 import { Pharmacy } from "../../@types/Pharmacy";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { getByIdPharmacies, pharmacySelector } from "../../store/pharmacySlice";
 
 interface Props {
   title: string;
   id: number;
   opened: boolean;
-  close: () => void;
+  close: (isSuccess: boolean) => void;
 }
 
 interface PharmacyForm {
@@ -22,8 +25,10 @@ interface PharmacyForm {
 }
 
 const EditPharmacy = ({ title, id, opened, close }: Props) => {
-  const [pharmacy, setPharmacy] = useState({} as Pharmacy);
-  const form = useForm({
+  const dispatch = useAppDispatch();
+  const pharmacy: Pharmacy = useAppSelector(pharmacySelector);
+
+  let form = useForm({
     initialValues: {
       Name: "",
       Address: "",
@@ -32,7 +37,6 @@ const EditPharmacy = ({ title, id, opened, close }: Props) => {
       Zip: "",
       NumberOfFilledPrescriptions: 0,
     },
-
     validate: {
       Name: (value) => (value.length === 0 ? "Name is required" : null),
       Address: (value) => (value.length === 0 ? "Address is required" : null),
@@ -53,37 +57,39 @@ const EditPharmacy = ({ title, id, opened, close }: Props) => {
   });
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!id) return;
-      const res = await axios.get(
-        `https://localhost:7055/api/Pharmacy/GetPharmacyById/${id}`
-      );
-      console.log(res.data.Data);
-      const pharmacy = res.data.Data;
-      setPharmacy(pharmacy);
-      if (!pharmacy) return;
-      const initialValue = {
-        Name: pharmacy.Name,
-        Address: pharmacy.Address,
-        City: pharmacy.City,
-        State: pharmacy.State,
-        Zip: pharmacy.Zip,
-        NumberOfFilledPrescriptions: pharmacy.NumberOfFilledPrescriptions,
-      };
-      form.setValues(initialValue);
-    };
+    if (opened === false) return;
+    dispatch(getByIdPharmacies(id));
+  }, [id, dispatch, opened]);
 
-    fetchData();
-  }, [id]);
+  useEffect(() => {
+    if (!(pharmacy && pharmacy.Id)) return;
+
+    const initialValue = {
+      Name: pharmacy.Name,
+      Address: pharmacy.Address,
+      City: pharmacy.City,
+      State: pharmacy.State,
+      Zip: pharmacy.Zip,
+      NumberOfFilledPrescriptions: pharmacy.NumberOfFilledPrescriptions,
+    };
+    form.setValues((prev) => ({ ...prev, ...initialValue }));
+  }, [pharmacy]);
+
+  const onClose = (isSuccess: boolean) => {
+    form.reset();
+    close(isSuccess);
+  };
 
   const updatePharmacy = async (values: PharmacyForm) => {
+    const tempPharmacy = cloneDeep(pharmacy);
     if (!pharmacy.Id) return;
-    pharmacy.Name = values.Name;
-    pharmacy.Address = values.Address;
-    pharmacy.City = values.City;
-    pharmacy.State = values.State;
-    pharmacy.Zip = values.Zip;
-    pharmacy.NumberOfFilledPrescriptions = values.NumberOfFilledPrescriptions;
+    tempPharmacy.Name = values.Name;
+    tempPharmacy.Address = values.Address;
+    tempPharmacy.City = values.City;
+    tempPharmacy.State = values.State;
+    tempPharmacy.Zip = values.Zip;
+    tempPharmacy.NumberOfFilledPrescriptions =
+      values.NumberOfFilledPrescriptions;
     try {
       const config = {
         headers: {
@@ -91,7 +97,7 @@ const EditPharmacy = ({ title, id, opened, close }: Props) => {
         },
       };
 
-      const body = JSON.stringify(pharmacy);
+      const body = JSON.stringify(tempPharmacy);
 
       const res = await axios.put(
         "https://localhost:7055/api/Pharmacy/UpdatePharmacy",
@@ -99,6 +105,9 @@ const EditPharmacy = ({ title, id, opened, close }: Props) => {
         config
       );
       console.log(res);
+      if (res.data.isSuccess) {
+        onClose(true);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -106,7 +115,7 @@ const EditPharmacy = ({ title, id, opened, close }: Props) => {
 
   return (
     <>
-      <Modal opened={opened} title={title} onClose={close}>
+      <Modal opened={opened} title={title} onClose={() => onClose(false)}>
         <form onSubmit={form.onSubmit((values) => updatePharmacy(values))}>
           <TextInput
             withAsterisk
