@@ -1,6 +1,6 @@
 IF EXISTS (SELECT * FROM sysobjects WHERE  id = object_id(N'[Warehouse].[pWarehousesProfit]') AND OBJECTPROPERTY(id, N'IsProcedure') = 1 )
 BEGIN 
-    DROP PROCEDURE Warehouse.pDeliveriesDetails
+    DROP PROCEDURE Warehouse.pWarehousesProfit
 END 
 GO 
 
