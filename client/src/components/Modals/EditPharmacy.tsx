@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import axios from "axios";
 import { Modal, TextInput, Button, Group, NumberInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
@@ -59,7 +59,7 @@ const EditPharmacy = ({ title, id, opened, close }: Props) => {
 
   useEffect(() => {
     if (opened === false) return;
-    dispatch(getByIdPharmacies(8));
+    dispatch(getByIdPharmacies(id));
   }, [id, dispatch, opened]);
 
   useEffect(() => {

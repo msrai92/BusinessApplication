@@ -29,7 +29,7 @@ function PharmacyList() {
 
   useEffect(() => {
     dispatch(getAllPharmacies());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     const mappedRows: JSX.Element[] = _pharmacies.map((element: Pharmacy) => (
