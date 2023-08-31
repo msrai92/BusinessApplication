@@ -26,7 +26,7 @@ namespace BusinessService.Controllers
                 response.isSuccess = false;
                 return NotFound(response);
             }
-            return Ok();
+            return Ok(response);
         }
 
         [HttpGet("GetPharmacies")]
@@ -39,12 +39,6 @@ namespace BusinessService.Controllers
         public async Task<ActionResult<ServiceResponse<GetByIdPharmacyDto>>> UpdatePharmacy(UpdatePharmacyDto pharmacy)
         {
             var response = await _pharmacyService.UpdatePharmacy(pharmacy);
-            if(response.Data is null)
-            {
-                response.Message = $"Pharmacy with id {pharmacy.Id} was not found";
-                response.isSuccess = false;
-                return NotFound(response);
-            }
             return Ok(response);
         }
     }
